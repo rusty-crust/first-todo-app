@@ -1,5 +1,7 @@
 #[allow(dead_code)]
 pub enum Command {
-    ADD { body: String },
-    LIST,
+    Add(String),
+    List,
+    Complete(usize),
+    Delete(usize),
 }

@@ -17,6 +17,20 @@ impl TodoStore {
         TodoStore {}
     }
 
+    pub fn get_by_sequential_index(&self, index: &usize) -> Result<Todo, TodoError> {
+        let todos = self.todos()?;
+
+        for (i, foo) in todos.iter().enumerate() {
+            if i == index - 1 {
+                return Ok(foo.clone());
+            }
+        }
+
+        Err(TodoError {
+            message: "Not Found Todo".to_string(),
+        })
+    }
+
     pub fn add(&mut self, todo: Todo) -> Result<(), TodoError> {
         let mut todos = self.todos()?;
 
@@ -35,5 +49,20 @@ impl TodoStore {
         let reader = BufReader::new(file);
         let todos: Vec<Todo> = serde_json::from_reader(reader)?;
         Ok(todos)
+    }
+
+    pub fn insert(&self, todos: &Vec<Todo>) -> Result<(), TodoError> {
+        let file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .read(true)
+            .open(TODO_PATH)?;
+        let mut writer = BufWriter::new(file);
+        writer.flush()?;
+
+        serde_json::to_writer(&mut writer, &todos)?;
+        writer.flush()?;
+
+        Ok(())
     }
 }

@@ -5,5 +5,7 @@ use crate::todo::todo_store::TodoStore;
 pub fn add_todo(todo: Todo, store: &mut TodoStore) -> Result<(), TodoError> {
     store.add(todo)?;
 
+    println!("Todo created! ✅\n");
+
     Ok(())
 }
