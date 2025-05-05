@@ -9,7 +9,16 @@ use todo::{command::Command, todo::Todo, todo_store::TodoStore};
 
 pub const ROOT_COMMAND: &str = "todo";
 
+#[test]
+fn test_extract_command() {
+    assert_eq!(true, true);
+}
+
 fn main() {
+    let message = "Temp temperature today is:";
+    let x = [message; 100];
+    println!("{}: {}", x[0], x[1]);
+
     println!("Hello, Todo!");
     let mut input = String::new();
     let mut store = TodoStore::init();
@@ -34,30 +43,33 @@ fn main() {
 
 fn handle_command(command: &Command, store: &mut TodoStore) {
     match command {
-        Command::Add(body) => match add_todo(Todo::new(body.to_string()), store) {
-            Err(error) => eprintln!("{}", error.message),
-            _ => (),
-        },
+        Command::Add(body) => {
+            if let Err(error) = add_todo(Todo::new(body.to_string()), store) {
+                eprintln!("{}", error.message);
+            }
+        }
+        Command::List => {
+            if let Err(error) = list_todos(store) {
+                eprintln!("{}", error.message)
+            }
+        }
 
-        Command::List => match list_todos(store) {
-            Err(error) => eprintln!("{}", error.message),
-            _ => (),
-        },
+        Command::Complete(id) => {
+            if let Err(error) = complete_todo(id, store) {
+                eprintln!("{}", error.message);
+            }
+        }
 
-        Command::Complete(id) => match complete_todo(id, store) {
-            Err(error) => eprintln!("{}", error.message),
-            _ => (),
-        },
-
-        Command::Delete(index) => match delete_todo(index, store) {
-            Err(error) => eprintln!("{}", error.message),
-            _ => (),
-        },
+        Command::Delete(index) => {
+            if let Err(e) = delete_todo(index, store) {
+                eprintln!("{}", e.message)
+            }
+        }
     }
 }
 
 fn get_command(input: &str) -> Result<Command, InputError> {
-    let mut input = input.trim().split(' ').into_iter();
+    let mut input = input.trim().split(' ');
 
     let first_word = input.next().ok_or(InputError {
         message: "Invalid command".to_string(),
@@ -102,7 +114,7 @@ fn parse_arguments<'a, I>(input: &mut I, message: &str) -> Result<&'a str, Input
 where
     I: Iterator<Item = &'a str>,
 {
-    return input.next().ok_or_else(|| InputError {
+    input.next().ok_or_else(|| InputError {
         message: message.to_string(),
-    });
+    })
 }

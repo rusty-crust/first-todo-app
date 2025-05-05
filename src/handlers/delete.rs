@@ -5,17 +5,11 @@ use crate::{
 
 pub fn delete_todo(index: &usize, store: &mut TodoStore) -> Result<(), TodoError> {
     let todos = store.todos()?;
-    let todo_to_delete = store.get_by_sequential_index(&index)?;
+    let todo_to_delete = store.get_by_sequential_index(index)?;
 
     let todos: Vec<Todo> = todos
         .into_iter()
-        .filter(|todo| {
-            if todo_to_delete.id == todo.id {
-                false
-            } else {
-                true
-            }
-        })
+        .filter(|todo| todo_to_delete.id != todo.id)
         .collect();
 
     store.insert(&todos)?;

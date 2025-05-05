@@ -20,9 +20,9 @@ impl TodoStore {
     pub fn get_by_sequential_index(&self, index: &usize) -> Result<Todo, TodoError> {
         let todos = self.todos()?;
 
-        for (i, foo) in todos.iter().enumerate() {
+        for (i, todo) in todos.iter().enumerate() {
             if i == index - 1 {
-                return Ok(foo.clone());
+                return Ok(todo.clone());
             }
         }
 
